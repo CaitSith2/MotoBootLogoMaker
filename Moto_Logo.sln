@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moto_Logo", "Moto_Logo\Moto_Logo.csproj", "{30CD20E2-826B-4676-921C-333C88B1D1BC}"
+EndProject
+Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "Packages", "Packages.mdproj", "{938E9CDB-B557-4EDC-A1B6-A30BB028351F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30CD20E2-826B-4676-921C-333C88B1D1BC}.Debug|x86.ActiveCfg = Debug|x86
+		{30CD20E2-826B-4676-921C-333C88B1D1BC}.Debug|x86.Build.0 = Debug|x86
+		{30CD20E2-826B-4676-921C-333C88B1D1BC}.Release|x86.ActiveCfg = Release|x86
+		{30CD20E2-826B-4676-921C-333C88B1D1BC}.Release|x86.Build.0 = Release|x86
+		{938E9CDB-B557-4EDC-A1B6-A30BB028351F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{938E9CDB-B557-4EDC-A1B6-A30BB028351F}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Moto_Logo\Moto_Logo.csproj
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		BuildVersion_UseGlobalSettings = True
+		BuildVersion_AssemblyInfoFilename = Moto_Logo\Properties\AssemblyInfo.cs
+		BuildVersion_StartDate = 2014/8/15
+		BuildVersion_UpdateFileVersion = True
+		BuildVersion_UpdateAssemblyVersion = True
+		BuildVersion_BuildVersioningStyle = None.None.MonthAndDayStamp.TimeStamp
+	EndGlobalSection
+EndGlobal

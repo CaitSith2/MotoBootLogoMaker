@@ -1,0 +1,19 @@
+ui_print("************************************************");
+ui_print(" +++             Changing to your           +++ ");
+ui_print(" +++              New Boot Logo             +++ ");
+ui_print("************************************************");
+
+ui_print("Mounting Partitions");
+mount("ext4", "EMMC", "/dev/block/platform/msm_sdcc.1/by-name/system", "/system");
+
+ui_print("Flashing Partitions with New Bootlogo.....");
+package_extract_file("logo.bin", "/dev/block/platform/msm_sdcc.1/by-name/logo");
+
+#package_extract_file("logo.bin","/tmp/logo.bin");
+#write_raw_image("/tmp/logo.bin", "/dev/block/#platform/msm_sdcc.1/by-name/logo");
+#delete("/tmp/logo.bin");
+
+ui_print("Dismounting Partitions");
+unmount("/system");
+unmount("/logo");
+ui_print(" *** Enjoy your New Logo *** ");
