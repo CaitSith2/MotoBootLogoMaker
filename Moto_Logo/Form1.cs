@@ -107,13 +107,14 @@ namespace Moto_Logo
             Close();
         }
 
-        private void init_tree(bool logoboot, bool logobattery, bool logounlocked, bool logolowpower, bool logounplug)
+        private void init_tree(bool logoboot, bool logobattery, bool logounlocked, bool logolowpower, bool logounplug, bool logocharge)
         {
             var logoBoot = false;
             var logoBattery = false;
             var logoUnlocked = false;
             var logoLowpower = false;
             var logoUnplug = false;
+            var logoCharge = false;
             for (var index = tvLogo.Nodes.Count - 1; index >= 0; index--)
             {
                 var node = tvLogo.Nodes[index];
@@ -146,6 +147,11 @@ namespace Moto_Logo
                             logoUnplug = true;
                         else removenode = !rdoMotoCustom.Checked;
                         break;
+                    case "logo_charge":
+                        if (logocharge)
+                            logoCharge = true;
+                        else removenode = !rdoMotoCustom.Checked;
+                        break;
                 }
                 if(removenode)
                     node.Remove();
@@ -155,6 +161,7 @@ namespace Moto_Logo
             if (!logoUnlocked && logounlocked) tvLogo.Nodes.Add("logo_unlocked");
             if (!logoLowpower && logolowpower) tvLogo.Nodes.Add("logo_lowpower");
             if (!logoUnplug && logounplug) tvLogo.Nodes.Add("logo_unplug");
+            if (!logoCharge && logocharge) tvLogo.Nodes.Add("logo_charge");
             for (var index = tvLogo.Nodes.Count - 1; index >= 0; index--)
             {
                 var node = tvLogo.Nodes[index];
@@ -180,6 +187,8 @@ namespace Moto_Logo
                     case "logo_unplug":
                         
                         break;
+                    case "logo_charge":
+                        break;
                 }
             }
 
@@ -193,7 +202,7 @@ namespace Moto_Logo
             udResolutionX.Value = 540;
             udResolutionY.Value = 960;
             rdoAndroid44.Checked = true;
-            init_tree(true, true, true, true, true);
+            init_tree(true, true, true, true, true, false);
         }
 
         private void rdoMotoCustom_CheckedChanged(object sender, EventArgs e)
@@ -201,7 +210,7 @@ namespace Moto_Logo
             udResolutionX.Enabled = rdoMotoCustom.Checked;
             udResolutionY.Enabled = rdoMotoCustom.Checked;
             if (!rdoMotoCustom.Checked) return;
-            init_tree(true, true, true, true, true);
+            init_tree(true, true, true, true, true, true);
         }
 
         private void rdoMotoGX_CheckedChanged(object sender, EventArgs e)
@@ -209,7 +218,7 @@ namespace Moto_Logo
             if (!rdoMotoGX.Checked) return;
             udResolutionX.Value = 720;
             udResolutionY.Value = 1280;
-            init_tree(true, true, true, false, false);
+            init_tree(true, true, true, false, false, false);
         }
 
         private void udResolutionX_ValueChanged(object sender, EventArgs e)
@@ -226,19 +235,22 @@ namespace Moto_Logo
                 switch (txtLogoInternalFile.Text)
                 {
                     case "logo_boot":
-                        init_tree(true, false, false, false, false);
+                        init_tree(true, false, false, false, false,false);
                         break;
                     case "logo_battery":
-                        init_tree(false, true, false, false, false);
+                        init_tree(false, true, false, false, false, false);
                         break;
                     case "logo_unlocked":
-                        init_tree(false, false, true, false, false);
+                        init_tree(false, false, true, false, false, false);
                         break;
                     case "logo_lowpower":
-                        init_tree(false, false, false, true, false);
+                        init_tree(false, false, false, true, false, false);
                         break;
                     case "logo_unplug":
-                        init_tree(false, false, false, false, true);
+                        init_tree(false, false, false, false, true, false);
+                        break;
+                    case "logo_charge":
+                        init_tree(false, false, false, false, false, true);
                         break;
                 }
 
