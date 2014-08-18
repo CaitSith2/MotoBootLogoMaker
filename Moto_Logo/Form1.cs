@@ -11,15 +11,20 @@ using System.Text;
 using System.Windows.Forms;
 using Ionic.Zip;
 
+
 namespace Moto_Logo
 {
     public partial class Form1 : Form
     {
         private bool _fileSaved;
-        private const int MaxFileSize = 4*1024*1024; //4MiB
-        private readonly List<String> _tempfilenames = new List<string>();
+        private int _maxFileSize = 4*1024*1024; //4MiB
         private readonly List<String> _loadedbitmapames = new List<string>(); 
         private readonly List<Bitmap> _loadedbitmaps = new List<Bitmap>();
+
+        private readonly List<int> _deviceResolutionX = new List<int>();
+        private readonly List<int> _deviceResolutionY = new List<int>();
+        private readonly List<int> _deviceLogoBinSize = new List<int>();
+        private readonly List<UInt32> _deviceLogoBinContents = new List<UInt32>();
 
         private Image FixedSizePreview(Image imgPhoto)
         {
@@ -107,6 +112,44 @@ namespace Moto_Logo
             Close();
         }
 
+        // ReSharper disable InconsistentNaming
+        [Flags]
+        private enum LOGO
+        {
+            LOGO_RAW = 0,
+            LOGO_BOOT = 1,
+            LOGO_BATTERY = 2,
+            LOGO_UNLOCKED = 4,
+            LOGO_LOWPOWER = 8,
+            LOGO_UNPLUG = 0x10,
+            LOGO_CHARGE = 0x20
+        };
+        // ReSharper restore InconsistentNaming
+
+
+        private void init_tree(UInt32 logobincontents)
+        {
+            if (logobincontents == (int) LOGO.LOGO_RAW)
+            {
+                init_tree(false, false, true, false, false, false);
+                rdoAndroid43.Enabled = false;
+                rdoAndroid44.Enabled = false;
+                rdoAndroidRAW.Checked = true;
+                return;
+            }
+            var enableKitkat = ((logobincontents & 0x80000000) == 0);
+            rdoAndroid43.Enabled = true;
+            rdoAndroid44.Enabled = enableKitkat;
+            if (enableKitkat) rdoAndroid44.Checked = true;
+            else rdoAndroid43.Checked = true;
+            init_tree((logobincontents & (UInt32)LOGO.LOGO_BOOT) == (UInt32)LOGO.LOGO_BOOT,
+                (logobincontents & (UInt32)LOGO.LOGO_BATTERY) == (UInt32)LOGO.LOGO_BATTERY,
+                (logobincontents & (UInt32)LOGO.LOGO_UNLOCKED) == (UInt32)LOGO.LOGO_UNLOCKED,
+                (logobincontents & (UInt32)LOGO.LOGO_LOWPOWER) == (UInt32)LOGO.LOGO_LOWPOWER,
+                (logobincontents & (UInt32)LOGO.LOGO_UNPLUG) == (UInt32)LOGO.LOGO_UNPLUG,
+                (logobincontents & (UInt32)LOGO.LOGO_CHARGE) == (UInt32)LOGO.LOGO_CHARGE);
+        }
+
         private void init_tree(bool logoboot, bool logobattery, bool logounlocked, bool logolowpower, bool logounplug, bool logocharge)
         {
             var logoBoot = false;
@@ -125,32 +168,32 @@ namespace Moto_Logo
                     case "logo_boot":
                         if (logoboot)
                             logoBoot = true;
-                        else removenode = !rdoMotoCustom.Checked;
+                        else removenode = (cboMoto.SelectedIndex > 0);
                         break;
                     case "logo_battery":
                         if(logobattery)
                             logoBattery = true;
-                        else removenode = !rdoMotoCustom.Checked;
+                        else removenode = (cboMoto.SelectedIndex > 0);
                         break;
                     case "logo_unlocked":
                         if(logounlocked)
                             logoUnlocked = true;
-                        else removenode = !rdoMotoCustom.Checked;
+                        else removenode = (cboMoto.SelectedIndex > 0);
                         break;
                     case "logo_lowpower":
                         if(logolowpower)
                             logoLowpower = true;
-                        else removenode = !rdoMotoCustom.Checked;
+                        else removenode = (cboMoto.SelectedIndex > 0);
                         break;
                     case "logo_unplug":
                         if(logounplug)
                             logoUnplug = true;
-                        else removenode = !rdoMotoCustom.Checked;
+                        else removenode = (cboMoto.SelectedIndex > 0);
                         break;
                     case "logo_charge":
                         if (logocharge)
                             logoCharge = true;
-                        else removenode = !rdoMotoCustom.Checked;
+                        else removenode = (cboMoto.SelectedIndex > 0);
                         break;
                 }
                 if(removenode)
@@ -195,32 +238,6 @@ namespace Moto_Logo
             
         }
 
-        private void rdoMotoE_CheckedChanged(object sender, EventArgs e)
-        {
-            //rdoAndroid43.Enabled = !rdoMotoE.Checked;
-            if (!rdoMotoE.Checked) return;
-            udResolutionX.Value = 540;
-            udResolutionY.Value = 960;
-            rdoAndroid44.Checked = true;
-            init_tree(true, true, true, true, true, false);
-        }
-
-        private void rdoMotoCustom_CheckedChanged(object sender, EventArgs e)
-        {
-            udResolutionX.Enabled = rdoMotoCustom.Checked;
-            udResolutionY.Enabled = rdoMotoCustom.Checked;
-            if (!rdoMotoCustom.Checked) return;
-            init_tree(true, true, true, true, true, true);
-        }
-
-        private void rdoMotoGX_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!rdoMotoGX.Checked) return;
-            udResolutionX.Value = 720;
-            udResolutionY.Value = 1280;
-            init_tree(true, true, true, false, false, false);
-        }
-
         private void udResolutionX_ValueChanged(object sender, EventArgs e)
         {
             tvLogo_AfterSelect(sender, null);
@@ -228,7 +245,7 @@ namespace Moto_Logo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (!rdoMotoCustom.Checked && button1.Text == Resources.Append) return;
+            if ((cboMoto.SelectedIndex > 0) && button1.Text == Resources.Append) return;
             if (txtLogoInternalFile.Text == "") return;
 
             if (button1.Text == Resources.Append)
@@ -287,7 +304,7 @@ namespace Moto_Logo
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if(rdoMotoCustom.Checked)
+            if((cboMoto.SelectedIndex == 0))
                 tvLogo.SelectedNode.Remove();
             else
             {
@@ -411,7 +428,7 @@ namespace Moto_Logo
                     pictureBox1.Image = new Bitmap(1, 1);
                     _fileSaved = false;
                     var android43 = false;
-                    rdoMotoCustom.Checked = true;
+                    cboMoto.SelectedIndex = 0;
                     rdoAndroid44.Checked = true;
                     udResolutionX.Value = 720;
                     udResolutionY.Value = 1280;
@@ -841,13 +858,13 @@ namespace Moto_Logo
                         writer.BaseStream.Position = 0x0D + (i*0x20) + 0x1C;
                         writer.Write(size);
                         writer.BaseStream.Position = writer.BaseStream.Length;
-                        if (writer.BaseStream.Length > MaxFileSize)
+                        if (writer.BaseStream.Length > _maxFileSize)
                         {
                             ProgressBar.Visible = false;
                             toolStripStatusLabel1.Text =
                                 @"Error: Images/options selected will not fit in logo.bin, Failed at " +
                                 tvLogo.Nodes[i].Text + @" Produced file is " +
-                                (writer.BaseStream.Length - MaxFileSize) + @" Bytes Too Large";
+                                (writer.BaseStream.Length - _maxFileSize) + @" Bytes Too Large";
                             return;
                         }
                     }
@@ -919,16 +936,33 @@ namespace Moto_Logo
             _loadedbitmapames.Clear();
             _fileSaved = false;
             rdoAndroid44.Checked = true;
-            rdoMotoGX.Checked = true;
+            cboMoto.SelectedIndex = 4;
             tvLogo.Nodes.Clear();
-            rdoMotoGX_CheckedChanged(sender, e);
+            cboMoto_SelectedIndexChanged(sender,e);
             toolStripStatusLabel1.Text = "";
             Application.DoEvents();
             pictureBox1.Image = new Bitmap(1, 1);
+            rdoImageCenter.Checked = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Init_cboMoto("Custom",720,1280,4194304,0x7FFFFFFF);
+            Init_cboMoto("Moto G 4G/LTE", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_CHARGE));
+            Init_cboMoto("Moto E", 540,960,4194304,(int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_LOWPOWER | LOGO.LOGO_UNPLUG));
+            Init_cboMoto("Moto X", 720,1280,4194304,(int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("Moto G", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("Droid Ultra", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("Droid RAZR HD", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("RAZR i", 540,960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("Droid RAZR M", 540, 960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("Photon Q 4G LTE", 540, 960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("Atrix HD", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("Droid 4", 540,960,1048576,(int)LOGO.LOGO_RAW);
+            Init_cboMoto("Atrix 2", 540, 960, 1048576, (int)LOGO.LOGO_RAW);
+            Init_cboMoto("Droid RAZR", 540, 960, 1048576, (int)LOGO.LOGO_RAW);
+            Init_cboMoto("Photon 4G", 540, 960, 1048576, (int)LOGO.LOGO_RAW);
+
             newToolStripMenuItem_Click(sender, e);
         }
 
@@ -1006,15 +1040,7 @@ namespace Moto_Logo
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            foreach (var filename in _tempfilenames)
-            {
-                try
-                {
-                    File.Delete(filename);
-                }
-// ReSharper disable once EmptyGeneralCatchClause
-                catch {}
-            }
+
         }
 
         private void rdoAndroidRAW_CheckedChanged(object sender, EventArgs e)
@@ -1031,9 +1057,7 @@ namespace Moto_Logo
             }
             else
             {
-                if (rdoMotoCustom.Checked) rdoMotoCustom_CheckedChanged(sender, e);
-                if (rdoMotoE.Checked) rdoMotoE_CheckedChanged(sender, e);
-                if (rdoMotoGX.Checked) rdoMotoGX_CheckedChanged(sender, e);
+                cboMoto_SelectedIndexChanged(sender, e);
             }
             tvLogo_AfterSelect(sender, null);
         }
@@ -1061,6 +1085,26 @@ namespace Moto_Logo
         private void udResolutionY_ValueChanged(object sender, EventArgs e)
         {
             tvLogo_AfterSelect(sender, null);
+        }
+
+        private void Init_cboMoto(string device, int resolutionX, int resolutionY, int logobinsize, UInt32 logoContents)
+        {
+            cboMoto.Items.Add(device);
+            _deviceResolutionX.Add(resolutionX);
+            _deviceResolutionY.Add(resolutionY);
+            _deviceLogoBinSize.Add(logobinsize);
+            _deviceLogoBinContents.Add(logoContents);
+        }
+
+        private void cboMoto_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int idx = cboMoto.SelectedIndex;
+            udResolutionX.Enabled = (idx == 0);
+            udResolutionY.Enabled = (idx == 0);
+            udResolutionX.Value = _deviceResolutionX[idx];
+            udResolutionY.Value = _deviceResolutionY[idx];
+            _maxFileSize = _deviceLogoBinSize[idx];
+            init_tree(_deviceLogoBinContents[idx]);
         }
     }
 }

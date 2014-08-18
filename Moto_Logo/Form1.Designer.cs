@@ -43,15 +43,13 @@
             this.spltMain = new System.Windows.Forms.SplitContainer();
             this.spltDevice = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cboMoto = new System.Windows.Forms.ComboBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.udResolutionX = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.udResolutionY = new System.Windows.Forms.NumericUpDown();
-            this.rdoMotoCustom = new System.Windows.Forms.RadioButton();
-            this.rdoMotoE = new System.Windows.Forms.RadioButton();
-            this.rdoMotoGX = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.rdoImageCenter = new System.Windows.Forms.RadioButton();
@@ -232,10 +230,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cboMoto);
             this.groupBox1.Controls.Add(this.groupBox3);
-            this.groupBox1.Controls.Add(this.rdoMotoCustom);
-            this.groupBox1.Controls.Add(this.rdoMotoE);
-            this.groupBox1.Controls.Add(this.rdoMotoGX);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
@@ -243,6 +239,16 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Motorola Device";
+            // 
+            // cboMoto
+            // 
+            this.cboMoto.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cboMoto.FormattingEnabled = true;
+            this.cboMoto.Location = new System.Drawing.Point(3, 16);
+            this.cboMoto.Name = "cboMoto";
+            this.cboMoto.Size = new System.Drawing.Size(279, 21);
+            this.cboMoto.TabIndex = 1;
+            this.cboMoto.SelectedIndexChanged += new System.EventHandler(this.cboMoto_SelectedIndexChanged);
             // 
             // groupBox3
             // 
@@ -322,41 +328,6 @@
             0,
             0});
             this.udResolutionY.ValueChanged += new System.EventHandler(this.udResolutionY_ValueChanged);
-            // 
-            // rdoMotoCustom
-            // 
-            this.rdoMotoCustom.AutoSize = true;
-            this.rdoMotoCustom.Location = new System.Drawing.Point(155, 19);
-            this.rdoMotoCustom.Name = "rdoMotoCustom";
-            this.rdoMotoCustom.Size = new System.Drawing.Size(60, 17);
-            this.rdoMotoCustom.TabIndex = 2;
-            this.rdoMotoCustom.Text = "Custom";
-            this.rdoMotoCustom.UseVisualStyleBackColor = true;
-            this.rdoMotoCustom.CheckedChanged += new System.EventHandler(this.rdoMotoCustom_CheckedChanged);
-            // 
-            // rdoMotoE
-            // 
-            this.rdoMotoE.AutoSize = true;
-            this.rdoMotoE.Location = new System.Drawing.Point(90, 19);
-            this.rdoMotoE.Name = "rdoMotoE";
-            this.rdoMotoE.Size = new System.Drawing.Size(59, 17);
-            this.rdoMotoE.TabIndex = 1;
-            this.rdoMotoE.Text = "Moto E";
-            this.rdoMotoE.UseVisualStyleBackColor = true;
-            this.rdoMotoE.CheckedChanged += new System.EventHandler(this.rdoMotoE_CheckedChanged);
-            // 
-            // rdoMotoGX
-            // 
-            this.rdoMotoGX.AutoSize = true;
-            this.rdoMotoGX.Checked = true;
-            this.rdoMotoGX.Location = new System.Drawing.Point(12, 19);
-            this.rdoMotoGX.Name = "rdoMotoGX";
-            this.rdoMotoGX.Size = new System.Drawing.Size(72, 17);
-            this.rdoMotoGX.TabIndex = 0;
-            this.rdoMotoGX.TabStop = true;
-            this.rdoMotoGX.Text = "Moto G/X";
-            this.rdoMotoGX.UseVisualStyleBackColor = true;
-            this.rdoMotoGX.CheckedChanged += new System.EventHandler(this.rdoMotoGX_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -640,7 +611,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.spltDevice)).EndInit();
             this.spltDevice.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
@@ -687,9 +657,6 @@
         private System.Windows.Forms.SplitContainer spltMain;
         private System.Windows.Forms.SplitContainer spltDevice;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton rdoMotoCustom;
-        private System.Windows.Forms.RadioButton rdoMotoE;
-        private System.Windows.Forms.RadioButton rdoMotoGX;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton rdoAndroid44;
         private System.Windows.Forms.RadioButton rdoAndroid43;
@@ -721,6 +688,7 @@
         private System.Windows.Forms.SaveFileDialog saveFileDialog2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.RadioButton rdoAndroidRAW;
+        private System.Windows.Forms.ComboBox cboMoto;
     }
 }
 
