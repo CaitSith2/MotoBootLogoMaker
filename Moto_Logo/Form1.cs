@@ -122,7 +122,8 @@ namespace Moto_Logo
             LOGO_UNLOCKED = 4,
             LOGO_LOWPOWER = 8,
             LOGO_UNPLUG = 0x10,
-            LOGO_CHARGE = 0x20
+            LOGO_CHARGE = 0x20,
+            KITKAT_DISABLED = 0x40000000
         };
         // ReSharper restore InconsistentNaming
 
@@ -137,7 +138,7 @@ namespace Moto_Logo
                 rdoAndroidRAW.Checked = true;
                 return;
             }
-            var enableKitkat = ((logobincontents & 0x80000000) == 0);
+            var enableKitkat = ((logobincontents & (int)LOGO.KITKAT_DISABLED) == 0);
             rdoAndroid43.Enabled = true;
             rdoAndroid44.Enabled = enableKitkat;
             if (enableKitkat) rdoAndroid44.Checked = true;
@@ -438,7 +439,12 @@ namespace Moto_Logo
                     Bitmap img;
                     if ((reader.ReadInt64() != 0x6F676F4C6F746F4DL) || (reader.ReadByte() != 0x00))
                     {
-                        if (reader.BaseStream.Length != 0xD5930) return;
+                        if (reader.BaseStream.Length != 0xD5930)
+                        {
+                            toolStripStatusLabel1.Text = @"Invalid logo.bin file loaded";
+                            ProgressBar.Visible = false;
+                            return;
+                        }
                         reader.BaseStream.Position = 0;
                         rdoAndroidRAW.Checked = true;
 
@@ -947,17 +953,17 @@ namespace Moto_Logo
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Init_cboMoto("Custom",720,1280,4194304,0x7FFFFFFF);
+            Init_cboMoto("Custom",720,1280,4194304,0x3FFFFFFF);
             Init_cboMoto("Moto G 4G/LTE", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_CHARGE));
             Init_cboMoto("Moto E", 540,960,4194304,(int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_LOWPOWER | LOGO.LOGO_UNPLUG));
             Init_cboMoto("Moto X", 720,1280,4194304,(int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
             Init_cboMoto("Moto G", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
             Init_cboMoto("Droid Ultra", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
-            Init_cboMoto("Droid RAZR HD", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
-            Init_cboMoto("RAZR i", 540,960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
-            Init_cboMoto("Droid RAZR M", 540, 960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
-            Init_cboMoto("Photon Q 4G LTE", 540, 960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
-            Init_cboMoto("Atrix HD", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("Droid RAZR HD", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED | LOGO.KITKAT_DISABLED));
+            Init_cboMoto("RAZR i", 540, 960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED | LOGO.KITKAT_DISABLED));
+            Init_cboMoto("Droid RAZR M", 540, 960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED | LOGO.KITKAT_DISABLED));
+            Init_cboMoto("Photon Q 4G LTE", 540, 960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED | LOGO.KITKAT_DISABLED));
+            Init_cboMoto("Atrix HD", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED | LOGO.KITKAT_DISABLED));
             Init_cboMoto("Droid 4", 540,960,1048576,(int)LOGO.LOGO_RAW);
             Init_cboMoto("Atrix 2", 540, 960, 1048576, (int)LOGO.LOGO_RAW);
             Init_cboMoto("Droid RAZR", 540, 960, 1048576, (int)LOGO.LOGO_RAW);
@@ -1105,6 +1111,11 @@ namespace Moto_Logo
             udResolutionY.Value = _deviceResolutionY[idx];
             _maxFileSize = _deviceLogoBinSize[idx];
             init_tree(_deviceLogoBinContents[idx]);
+        }
+
+        private void cboMoto_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            
         }
     }
 }

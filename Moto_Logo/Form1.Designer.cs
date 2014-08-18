@@ -243,12 +243,14 @@
             // cboMoto
             // 
             this.cboMoto.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cboMoto.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboMoto.FormattingEnabled = true;
             this.cboMoto.Location = new System.Drawing.Point(3, 16);
             this.cboMoto.Name = "cboMoto";
             this.cboMoto.Size = new System.Drawing.Size(279, 21);
             this.cboMoto.TabIndex = 1;
             this.cboMoto.SelectedIndexChanged += new System.EventHandler(this.cboMoto_SelectedIndexChanged);
+            this.cboMoto.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cboMoto_KeyPress);
             // 
             // groupBox3
             // 
