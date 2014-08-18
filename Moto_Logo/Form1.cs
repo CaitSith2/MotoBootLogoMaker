@@ -663,7 +663,7 @@ namespace Moto_Logo
                                 writer.Close();
                                 return;
                             }
-                        img = new Bitmap(100, 100);
+                        img = FixedSizeSave(new Bitmap(100, 100));
                         var grPhoto = Graphics.FromImage(img);
                         grPhoto.Clear(Color.White);
                         grPhoto.Dispose();
@@ -758,7 +758,7 @@ namespace Moto_Logo
                                 writer.Close();
                                 return;
                             }
-                            img = new Bitmap(100, 100);
+                            img = FixedSizeSave(new Bitmap(100, 100));
                             var grPhoto = Graphics.FromImage(img);
                             grPhoto.Clear(Color.White);
                             grPhoto.Dispose();
