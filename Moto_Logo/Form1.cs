@@ -162,7 +162,7 @@ namespace Moto_Logo
             for (var index = tvLogo.Nodes.Count - 1; index >= 0; index--)
             {
                 var node = tvLogo.Nodes[index];
-                var removenode = false;
+                var removenode = (cboMoto.SelectedIndex > 0);
                 switch (node.Text)
                 {
                         
@@ -365,7 +365,7 @@ namespace Moto_Logo
                 : Resources.Append;
         }
 
-        private byte[] ExtractLogoBin(string zipfilename)
+        private static byte[] ExtractLogoBin(string zipfilename)
         {
             byte[] buffer = null;
             using (var input = new ZipInputStream(zipfilename))
@@ -459,8 +459,13 @@ namespace Moto_Logo
                             }
                             catch { }
                             for (var x = 0; x < 540; x++)
+                            {
+                                var blue = reader.ReadByte();
+                                var green = reader.ReadByte();
+                                var red = reader.ReadByte();
                                 img.SetPixel(x, y,
-                                    Color.FromArgb(reader.ReadByte(), reader.ReadByte(), reader.ReadByte()));
+                                    Color.FromArgb(red, green, blue));
+                            }
                         }
                         if (_loadedbitmaps.IndexOf(img) == -1)
                         {
@@ -567,8 +572,13 @@ namespace Moto_Logo
                                 }
                                 catch { }
                                 for (var x = 0; x < 540; x++)
+                                {
+                                    var blue = reader.ReadByte();
+                                    var green = reader.ReadByte();
+                                    var red = reader.ReadByte();
                                     img.SetPixel(x, y,
-                                        Color.FromArgb(reader.ReadByte(), reader.ReadByte(), reader.ReadByte()));
+                                        Color.FromArgb(red, green, blue));
+                                }
                             }
                         }
                         try
@@ -671,9 +681,9 @@ namespace Moto_Logo
                         }
                         for (var x = 0; x < 540; x++)
                         {
-                            writer.Write(img.GetPixel(x, y).R);
-                            writer.Write(img.GetPixel(x, y).G);
                             writer.Write(img.GetPixel(x, y).B);
+                            writer.Write(img.GetPixel(x, y).G);
+                            writer.Write(img.GetPixel(x, y).R);
                         }
                     }
 
@@ -774,9 +784,9 @@ namespace Moto_Logo
                                 }
                                 for (var x = 0; x < 540; x++)
                                 {
-                                    writer.Write(img.GetPixel(x, y).R);
-                                    writer.Write(img.GetPixel(x, y).G);
                                     writer.Write(img.GetPixel(x, y).B);
+                                    writer.Write(img.GetPixel(x, y).G);
+                                    writer.Write(img.GetPixel(x, y).R);
                                 }
                             }
                             while ((writer.BaseStream.Position%0x200) != 0)
@@ -977,21 +987,6 @@ namespace Moto_Logo
             tvLogo_AfterSelect(sender, null);
         }
 
-        private void rdoImageCenter_CheckedChanged(object sender, EventArgs e)
-        {
-            tvLogo_AfterSelect(sender, null);
-        }
-
-        private void rdoImageStretchAspect_CheckedChanged(object sender, EventArgs e)
-        {
-            tvLogo_AfterSelect(sender, null);
-        }
-
-        private void rdoImageFill_CheckedChanged(object sender, EventArgs e)
-        {
-            tvLogo_AfterSelect(sender, null);
-        }
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new AboutBox1().ShowDialog();
@@ -1042,11 +1037,6 @@ namespace Moto_Logo
                 toolStripStatusLabel1.Text = @"Unable to Extract Image from bootlogo :(";
                 Application.DoEvents();
             }
-        }
-
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
-        {
-
         }
 
         private void rdoAndroidRAW_CheckedChanged(object sender, EventArgs e)
@@ -1111,11 +1101,6 @@ namespace Moto_Logo
             udResolutionY.Value = _deviceResolutionY[idx];
             _maxFileSize = _deviceLogoBinSize[idx];
             init_tree(_deviceLogoBinContents[idx]);
-        }
-
-        private void cboMoto_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            
         }
     }
 }

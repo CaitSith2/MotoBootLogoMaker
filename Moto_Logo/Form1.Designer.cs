@@ -250,7 +250,6 @@
             this.cboMoto.Size = new System.Drawing.Size(279, 21);
             this.cboMoto.TabIndex = 1;
             this.cboMoto.SelectedIndexChanged += new System.EventHandler(this.cboMoto_SelectedIndexChanged);
-            this.cboMoto.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cboMoto_KeyPress);
             // 
             // groupBox3
             // 
@@ -364,7 +363,7 @@
             this.rdoImageCenter.TabStop = true;
             this.rdoImageCenter.Text = "Center";
             this.rdoImageCenter.UseVisualStyleBackColor = true;
-            this.rdoImageCenter.CheckedChanged += new System.EventHandler(this.rdoImageCenter_CheckedChanged);
+            this.rdoImageCenter.CheckedChanged += new System.EventHandler(this.rdoAndroid43_CheckedChanged);
             // 
             // rdoImageStretchAspect
             // 
@@ -375,7 +374,7 @@
             this.rdoImageStretchAspect.TabIndex = 1;
             this.rdoImageStretchAspect.Text = "Stretch Proportionately";
             this.rdoImageStretchAspect.UseVisualStyleBackColor = true;
-            this.rdoImageStretchAspect.CheckedChanged += new System.EventHandler(this.rdoImageStretchAspect_CheckedChanged);
+            this.rdoImageStretchAspect.CheckedChanged += new System.EventHandler(this.rdoAndroid43_CheckedChanged);
             // 
             // rdoImageFill
             // 
@@ -386,7 +385,7 @@
             this.rdoImageFill.TabIndex = 2;
             this.rdoImageFill.Text = "Fill";
             this.rdoImageFill.UseVisualStyleBackColor = true;
-            this.rdoImageFill.CheckedChanged += new System.EventHandler(this.rdoImageFill_CheckedChanged);
+            this.rdoImageFill.CheckedChanged += new System.EventHandler(this.rdoAndroid43_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -421,6 +420,7 @@
             this.rdoAndroid44.TabStop = true;
             this.rdoAndroid44.Text = "KitKat";
             this.rdoAndroid44.UseVisualStyleBackColor = true;
+            this.rdoAndroid44.CheckedChanged += new System.EventHandler(this.rdoAndroid43_CheckedChanged);
             // 
             // rdoAndroid43
             // 
@@ -598,7 +598,6 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Motorola Boot Logo Maker";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form1_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form1_DragEnter);
