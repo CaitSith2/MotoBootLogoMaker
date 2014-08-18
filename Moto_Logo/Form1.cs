@@ -17,6 +17,7 @@ namespace Moto_Logo
     public partial class Form1 : Form
     {
         private bool _fileSaved;
+        private bool _autoselectlogobinversion = true;
         private int _maxFileSize = 4*1024*1024; //4MiB
         private readonly List<String> _loadedbitmapames = new List<string>(); 
         private readonly List<Bitmap> _loadedbitmaps = new List<Bitmap>();
@@ -141,8 +142,8 @@ namespace Moto_Logo
             var enableKitkat = ((logobincontents & (int)LOGO.KITKAT_DISABLED) == 0);
             rdoAndroid43.Enabled = true;
             rdoAndroid44.Enabled = enableKitkat;
-            if (enableKitkat) rdoAndroid44.Checked = true;
-            else rdoAndroid43.Checked = true;
+            if (_autoselectlogobinversion && enableKitkat) rdoAndroid44.Checked = true;
+            else if (_autoselectlogobinversion || rdoAndroid44.Checked) rdoAndroid43.Checked = true;
             init_tree((logobincontents & (UInt32)LOGO.LOGO_BOOT) == (UInt32)LOGO.LOGO_BOOT,
                 (logobincontents & (UInt32)LOGO.LOGO_BATTERY) == (UInt32)LOGO.LOGO_BATTERY,
                 (logobincontents & (UInt32)LOGO.LOGO_UNLOCKED) == (UInt32)LOGO.LOGO_UNLOCKED,
@@ -162,7 +163,7 @@ namespace Moto_Logo
             for (var index = tvLogo.Nodes.Count - 1; index >= 0; index--)
             {
                 var node = tvLogo.Nodes[index];
-                var removenode = (cboMoto.SelectedIndex > 0);
+                var removenode = false;
                 switch (node.Text)
                 {
                         
@@ -1053,7 +1054,9 @@ namespace Moto_Logo
             }
             else
             {
+                _autoselectlogobinversion = false;
                 cboMoto_SelectedIndexChanged(sender, e);
+                _autoselectlogobinversion = true;
             }
             tvLogo_AfterSelect(sender, null);
         }
