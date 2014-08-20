@@ -1,4 +1,5 @@
-﻿// ReSharper disable EmptyGeneralCatchClause
+﻿using System.Windows.Forms.VisualStyles;
+// ReSharper disable EmptyGeneralCatchClause
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
@@ -143,7 +144,7 @@ namespace Moto_Logo
             rdoAndroid43.Enabled = true;
             rdoAndroid44.Enabled = enableKitkat;
             if (_autoselectlogobinversion && enableKitkat) rdoAndroid44.Checked = true;
-            else if (_autoselectlogobinversion || rdoAndroid44.Checked) rdoAndroid43.Checked = true;
+            else if (_autoselectlogobinversion && rdoAndroid44.Checked) rdoAndroid43.Checked = true;
             init_tree((logobincontents & (UInt32)LOGO.LOGO_BOOT) == (UInt32)LOGO.LOGO_BOOT,
                 (logobincontents & (UInt32)LOGO.LOGO_BATTERY) == (UInt32)LOGO.LOGO_BATTERY,
                 (logobincontents & (UInt32)LOGO.LOGO_UNLOCKED) == (UInt32)LOGO.LOGO_UNLOCKED,
@@ -620,6 +621,128 @@ namespace Moto_Logo
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
             OpenFile(openFileDialog1.FileName);
         }
+
+
+        private byte[] compress_row_min_two(int[] colors)
+        {
+            var j = 0;
+            MemoryStream stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+            while (j < colors.Length)
+            {
+                var k = j;
+                while ((k < colors.Length) && (colors[j] == colors[k]))
+                {
+                    k++;
+                }
+                if ((k - j) > 1)
+                {
+                    writer.Write((byte)(0x80 | ((k - j) >> 8)));
+                    writer.Write((byte)((k - j) & 0xFF));
+                    writer.Write((byte)(colors[j] & 0xFF));
+                    writer.Write((byte)((colors[j] >> 8) & 0xFF));
+                    writer.Write((byte)((colors[j] >> 16) & 0xFF));
+                    j = k;
+                }
+                else
+                {
+                    var l = k;
+                    k = j;
+                    while ((l < colors.Length) && (colors[k] != colors[l]))
+                    {
+                        k++;
+                        l++;
+                    }
+                    if ((k - j) == 0)
+                    {
+                        writer.Write((byte)0);
+                        writer.Write((byte)1);
+                        writer.Write((byte)(colors[colors.Length - 1] & 0xFF));
+                        writer.Write((byte)((colors[colors.Length - 1] >> 8) & 0xFF));
+                        writer.Write((byte)((colors[colors.Length - 1] >> 16) & 0xFF));
+                        break;
+                    }
+                    if (k == (colors.Length - 1))
+                        k++;
+                    writer.Write((byte)((k - j) >> 8));
+                    writer.Write((byte)((k - j) & 0xFF));
+                    for (l = 0; l < (k - j); l++)
+                    {
+                        writer.Write((byte)(colors[j + l] & 0xFF));
+                        writer.Write((byte)((colors[j + l] >> 8) & 0xFF));
+                        writer.Write((byte)((colors[j + l] >> 16) & 0xFF));
+                    }
+                    j = k;
+                }
+            }
+            return stream.ToArray();
+        }
+
+        private byte[] compress_row_min_three(int[] colors)
+        {
+            var j = 0;
+            MemoryStream stream = new MemoryStream();
+            var writer = new BinaryWriter(stream);
+            while (j < colors.Length)
+            {
+                var k = j;
+                while ((k < colors.Length) && (colors[j] == colors[k]))
+                {
+                    k++;
+                }
+                if ((k - j) > 2)
+                {
+                    writer.Write((byte)(0x80 | ((k - j) >> 8)));
+                    writer.Write((byte)((k - j) & 0xFF));
+                    writer.Write((byte)(colors[j] & 0xFF));
+                    writer.Write((byte)((colors[j] >> 8) & 0xFF));
+                    writer.Write((byte)((colors[j] >> 16) & 0xFF));
+                    j = k;
+                }
+                else
+                {
+                    var l = k;
+                    do
+                    {
+                        k = l - 1;
+                        while ((l < colors.Length) && (colors[k] != colors[l]))
+                        {
+                            k++;
+                            l++;
+                        }
+                        while ((l < colors.Length) && (colors[k] == colors[l]))
+                        {
+                            l++;
+                        }
+                        if (l == colors.Length)
+                            break;
+                    } while ((l - k) < 3); 
+                    if ((k - j) == 0)
+                    {
+                        writer.Write((byte)0);
+                        writer.Write((byte)1);
+                        writer.Write((byte)(colors[colors.Length - 1] & 0xFF));
+                        writer.Write((byte)((colors[colors.Length - 1] >> 8) & 0xFF));
+                        writer.Write((byte)((colors[colors.Length - 1] >> 16) & 0xFF));
+                        break;
+                    }
+                    if (k == (colors.Length - 1))
+                        k++;
+
+                    writer.Write((byte)((k - j) >> 8));
+                    writer.Write((byte)((k - j) & 0xFF));
+                    for (l = 0; l < (k - j); l++)
+                    {
+                        writer.Write((byte)(colors[j + l] & 0xFF));
+                        writer.Write((byte)((colors[j + l] >> 8) & 0xFF));
+                        writer.Write((byte)((colors[j + l] >> 16) & 0xFF));
+                    }
+                    j = k;
+                }
+            }
+            return stream.ToArray();
+        }
+
         
         private void SaveFile()
         {
@@ -820,54 +943,17 @@ namespace Moto_Logo
                                     colors[x] |= img.GetPixel(x, y).B;
                                 }
                                 var j = 0;
-                                while (j < img.Width)
+                                var compresstwo = compress_row_min_two(colors);
+                                var compressthree = compress_row_min_three(colors);
+                                if (compresstwo.Length <= compressthree.Length)
                                 {
-                                    var k = j;
-                                    while ((k < img.Width) && (colors[j] == colors[k]))
-                                    {
-                                        k++;
-                                    }
-                                    if ((k - j) > 1)
-                                    {
-                                        writer.Write((byte) (0x80 | ((k - j) >> 8)));
-                                        writer.Write((byte) ((k - j) & 0xFF));
-                                        writer.Write((byte) (colors[j] & 0xFF));
-                                        writer.Write((byte) ((colors[j] >> 8) & 0xFF));
-                                        writer.Write((byte) ((colors[j] >> 16) & 0xFF));
-                                        size += 5;
-                                        j = k;
-                                    }
-                                    else
-                                    {
-                                        var l = k;
-                                        k = j;
-                                        while ((l < img.Width) && (colors[k] != colors[l]))
-                                        {
-                                            k++;
-                                            l++;
-                                        }
-                                        if ((k - j) == 0)
-                                        {
-                                            writer.Write((byte) 0);
-                                            writer.Write((byte) 1);
-                                            writer.Write((byte) (colors[img.Width - 1] & 0xFF));
-                                            writer.Write((byte) ((colors[img.Width - 1] >> 8) & 0xFF));
-                                            writer.Write((byte) ((colors[img.Width - 1] >> 16) & 0xFF));
-                                            size += 5;
-                                            break;
-                                        }
-                                        writer.Write((byte) ((k - j) >> 8));
-                                        writer.Write((byte) ((k - j) & 0xFF));
-                                        size += 2;
-                                        for (l = 0; l < (k - j); l++)
-                                        {
-                                            writer.Write((byte) (colors[j + l] & 0xFF));
-                                            writer.Write((byte) ((colors[j + l] >> 8) & 0xFF));
-                                            writer.Write((byte) ((colors[j + l] >> 16) & 0xFF));
-                                            size += 3;
-                                        }
-                                        j = k;
-                                    }
+                                    writer.Write(compresstwo);
+                                    size += compresstwo.Length;
+                                }
+                                else
+                                {
+                                    writer.Write(compressthree);
+                                    size += compressthree.Length;
                                 }
                             }
                         }
@@ -1104,6 +1190,7 @@ namespace Moto_Logo
             udResolutionY.Value = _deviceResolutionY[idx];
             _maxFileSize = _deviceLogoBinSize[idx];
             init_tree(_deviceLogoBinContents[idx]);
+            toolStripStatusLabel1.Text = @"Max Logo.bin size = " + (_maxFileSize / 1024 / 1024) + @"MiB";
         }
     }
 }

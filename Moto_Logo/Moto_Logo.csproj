@@ -133,6 +133,7 @@
     <None Include="Ionic\Zip\Migrated rules for Zip DLL.ruleset" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bitcoin qr only.png" />
     <Content Include="main_icon.ico" />
     <Content Include="Ionic\Zlib\LICENSE.jzlib.txt" />
     <Content Include="Ionic\Zlib\License.zlib.txt" />
@@ -141,7 +142,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_StartDate="2014/8/25" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_BuildVersioningStyle="None.None.MonthAndDayStamp.TimeStamp" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.MonthAndDayStamp.TimeStamp" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_StartDate="2014/8/25" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

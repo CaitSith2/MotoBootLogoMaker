@@ -121,7 +121,7 @@
   <data name="logoPictureBox.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAtAAAAUACAYAAABuzmU9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAACxEAAAsRAX9kX5EAAP+lSURBVHhe7P0HmF3HdWYNt2VZlmXLypmSKEqMYg4giUDk
+        YQUAAAAJcEhZcwAACw0AAAsNAe0HwCwAAP+lSURBVHhe7P0HmF3HdWYNt2VZlmXLypmSKEqMYg4giUDk
         nCORCYIkCIAZzFkkFZ3z2OMJ/2d7PLYSlSjmCIAIjQbQaOSccwaYSdW/1j6nWi3P52/MGVmWyNrPs1V1
         6tQ599zbDfa6r97a1ZBKlChRokSJEiVKlCjxb44C0CVKlChRokSJEiVKvIkoAF2iRIkSJUqUKFGixJuI
         AtAlSpQoUaJEiRIlSryJKABdokSJEiVKlChRosSbiALQJUqUKFGiRIkSJUq8iSgAXaJEiRIlSpQoUaLE
@@ -6373,8 +6373,8 @@
   <data name="textBoxDescription.Text" xml:space="preserve">
     <value>Double Click on the Treenode entries to select files for the various entries.
 
-At present, no logo.bin files can be greater than 4MiB, as no devices have a logo partition larger than 4MiB.
+Credits to carock for the logo.bin compression format.
 
-Credits to carock for the logo.bin compression format.</value>
+If you wish to support me, either send bitcoin to 1CSTwoZZWgtgmb7VBTjmfd8JryGyrd9RNs or send a paypal donation to d_good@caitsith2.com</value>
   </data>
 </root>

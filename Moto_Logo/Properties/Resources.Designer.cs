@@ -70,6 +70,16 @@ namespace Moto_Logo.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap bitcoin_qr {
+            get {
+                object obj = ResourceManager.GetObject("bitcoin_qr", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logo bin files|*.bin|All Files|*.*.
         /// </summary>
         public static string LogoBins {
