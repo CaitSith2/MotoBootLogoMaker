@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms.VisualStyles;
-// ReSharper disable EmptyGeneralCatchClause
+﻿// ReSharper disable EmptyGeneralCatchClause
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
@@ -27,6 +26,16 @@ namespace Moto_Logo
         private readonly List<int> _deviceResolutionY = new List<int>();
         private readonly List<int> _deviceLogoBinSize = new List<int>();
         private readonly List<UInt32> _deviceLogoBinContents = new List<UInt32>();
+
+        private void IncrementProgressBar(int progress)
+        {
+            try
+            {
+                ProgressBar.Value += progress;
+                Application.DoEvents();
+            }
+            catch { }
+        }
 
         private Image FixedSizePreview(Image imgPhoto)
         {
@@ -385,6 +394,27 @@ namespace Moto_Logo
             return buffer;
         }
 
+// ReSharper disable once InconsistentNaming
+        private Bitmap Decode540x540Image(BinaryReader reader)
+        {
+            var img = new Bitmap(540, 540, PixelFormat.Format24bppRgb);
+            ProgressBar.Maximum = 540 * 540;
+
+            for (var y = 0; y < 540; y++)
+            {
+                IncrementProgressBar(540);
+                for (var x = 0; x < 540; x++)
+                {
+                    var blue = reader.ReadByte();
+                    var green = reader.ReadByte();
+                    var red = reader.ReadByte();
+                    img.SetPixel(x, y,
+                        Color.FromArgb(blue, green, red));
+                }
+            }
+            return img;
+        }
+
         private void OpenFile(string filename)
         {
             var zipFile = false;
@@ -449,26 +479,8 @@ namespace Moto_Logo
                         }
                         reader.BaseStream.Position = 0;
                         rdoAndroidRAW.Checked = true;
+                        img = Decode540x540Image(reader);
 
-                        ProgressBar.Maximum = 540 * 540;
-                        img = new Bitmap(540, 540, PixelFormat.Format24bppRgb);
-                        for (var y = 0; y < 540; y++)
-                        {
-                            try
-                            {
-                                ProgressBar.Value += 540;
-                                Application.DoEvents();
-                            }
-                            catch { }
-                            for (var x = 0; x < 540; x++)
-                            {
-                                var blue = reader.ReadByte();
-                                var green = reader.ReadByte();
-                                var red = reader.ReadByte();
-                                img.SetPixel(x, y,
-                                    Color.FromArgb(red, green, blue));
-                            }
-                        }
                         if (_loadedbitmaps.IndexOf(img) == -1)
                         {
                             _loadedbitmaps.Add(img);
@@ -534,9 +546,7 @@ namespace Moto_Logo
                                         img.SetPixel(xx++, yy,
                                             Color.FromArgb(red, green, blue));
                                         if (xx != x) continue;
-                                        try { ProgressBar.Value += x; }
-                                        catch { }
-                                        Application.DoEvents();
+                                        IncrementProgressBar(x);
                                         xx = 0;
                                         yy++;
                                     }
@@ -551,9 +561,7 @@ namespace Moto_Logo
                                         img.SetPixel(xx++, yy,
                                             Color.FromArgb(red, green, blue));
                                         if (xx != x) continue;
-                                        try { ProgressBar.Value += x; }
-                                        catch { }
-                                        Application.DoEvents();
+                                        IncrementProgressBar(x);
                                         xx = 0;
                                         yy++;
                                     }
@@ -563,25 +571,7 @@ namespace Moto_Logo
                         else
                         {
                             reader.BaseStream.Position = offset[i];
-                            ProgressBar.Maximum = 540 * 540;
-                            img = new Bitmap(540, 540, PixelFormat.Format24bppRgb);
-                            for (var y = 0; y < 540; y++)
-                            {
-                                try
-                                {
-                                    ProgressBar.Value += 540;
-                                    Application.DoEvents();
-                                }
-                                catch { }
-                                for (var x = 0; x < 540; x++)
-                                {
-                                    var blue = reader.ReadByte();
-                                    var green = reader.ReadByte();
-                                    var red = reader.ReadByte();
-                                    img.SetPixel(x, y,
-                                        Color.FromArgb(red, green, blue));
-                                }
-                            }
+                            img = Decode540x540Image(reader);
                         }
                         try
                         {
@@ -623,15 +613,15 @@ namespace Moto_Logo
         }
 
 
-        private byte[] compress_row_min_two(int[] colors)
+        private static byte[] compress_row(IList<int> colors)
         {
             var j = 0;
-            MemoryStream stream = new MemoryStream();
+            var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
-            while (j < colors.Length)
+            while (j < colors.Count)
             {
                 var k = j;
-                while ((k < colors.Length) && (colors[j] == colors[k]))
+                while ((k < colors.Count) && (colors[j] == colors[k]))
                 {
                     k++;
                 }
@@ -647,86 +637,39 @@ namespace Moto_Logo
                 else
                 {
                     var l = k;
-                    k = j;
-                    while ((l < colors.Length) && (colors[k] != colors[l]))
-                    {
-                        k++;
-                        l++;
-                    }
-                    if ((k - j) == 0)
-                    {
-                        writer.Write((byte)0);
-                        writer.Write((byte)1);
-                        writer.Write((byte)(colors[colors.Length - 1] & 0xFF));
-                        writer.Write((byte)((colors[colors.Length - 1] >> 8) & 0xFF));
-                        writer.Write((byte)((colors[colors.Length - 1] >> 16) & 0xFF));
-                        break;
-                    }
-                    if (k == (colors.Length - 1))
-                        k++;
-                    writer.Write((byte)((k - j) >> 8));
-                    writer.Write((byte)((k - j) & 0xFF));
-                    for (l = 0; l < (k - j); l++)
-                    {
-                        writer.Write((byte)(colors[j + l] & 0xFF));
-                        writer.Write((byte)((colors[j + l] >> 8) & 0xFF));
-                        writer.Write((byte)((colors[j + l] >> 16) & 0xFF));
-                    }
-                    j = k;
-                }
-            }
-            return stream.ToArray();
-        }
-
-        private byte[] compress_row_min_three(int[] colors)
-        {
-            var j = 0;
-            MemoryStream stream = new MemoryStream();
-            var writer = new BinaryWriter(stream);
-            while (j < colors.Length)
-            {
-                var k = j;
-                while ((k < colors.Length) && (colors[j] == colors[k]))
-                {
-                    k++;
-                }
-                if ((k - j) > 2)
-                {
-                    writer.Write((byte)(0x80 | ((k - j) >> 8)));
-                    writer.Write((byte)((k - j) & 0xFF));
-                    writer.Write((byte)(colors[j] & 0xFF));
-                    writer.Write((byte)((colors[j] >> 8) & 0xFF));
-                    writer.Write((byte)((colors[j] >> 16) & 0xFF));
-                    j = k;
-                }
-                else
-                {
-                    var l = k;
+                    int m;
                     do
                     {
                         k = l - 1;
-                        while ((l < colors.Length) && (colors[k] != colors[l]))
+                        while ((l < colors.Count) && (colors[k] != colors[l]))
                         {
                             k++;
                             l++;
                         }
-                        while ((l < colors.Length) && (colors[k] == colors[l]))
+                        while ((l < colors.Count) && (colors[k] == colors[l]))
                         {
                             l++;
                         }
-                        if (l == colors.Length)
+                        if (l == colors.Count)
                             break;
-                    } while ((l - k) < 3); 
+                        m = l;
+                        while ((m < colors.Count) && (colors[l] == colors[m]))
+                        {
+                            m++;
+                        }
+                        
+                        
+                    } while (((l - k) < 3) && ((m-l) < 2));
                     if ((k - j) == 0)
                     {
                         writer.Write((byte)0);
                         writer.Write((byte)1);
-                        writer.Write((byte)(colors[colors.Length - 1] & 0xFF));
-                        writer.Write((byte)((colors[colors.Length - 1] >> 8) & 0xFF));
-                        writer.Write((byte)((colors[colors.Length - 1] >> 16) & 0xFF));
+                        writer.Write((byte)(colors[colors.Count - 1] & 0xFF));
+                        writer.Write((byte)((colors[colors.Count - 1] >> 8) & 0xFF));
+                        writer.Write((byte)((colors[colors.Count - 1] >> 16) & 0xFF));
                         break;
                     }
-                    if (k == (colors.Length - 1))
+                    if (k == (colors.Count - 1))
                         k++;
 
                     writer.Write((byte)((k - j) >> 8));
@@ -792,17 +735,9 @@ namespace Moto_Logo
                         grPhoto.Clear(Color.White);
                         grPhoto.Dispose();
                     }
-                    Application.DoEvents();
                     for (var y = 0; y < 540; y++)
                     {
-                        try
-                        {
-                            ProgressBar.Value += 540;
-                            Application.DoEvents();
-                        }
-                        catch
-                        {
-                        }
+                        IncrementProgressBar(540);
                         for (var x = 0; x < 540; x++)
                         {
                             writer.Write(img.GetPixel(x, y).B);
@@ -889,7 +824,6 @@ namespace Moto_Logo
                         }
                         toolStripStatusLabel1.Text = @"Processing " + tvLogo.Nodes[i].Text;
                         ProgressBar.Value = 0;
-                        Application.DoEvents();
                         ProgressBar.Maximum = img.Width*img.Height;
                         var size = 0;
                         if (android43)
@@ -898,14 +832,7 @@ namespace Moto_Logo
                             Application.DoEvents();
                             for (var y = 0; y < 540; y++)
                             {
-                                try
-                                {
-                                    ProgressBar.Value += 540;
-                                    Application.DoEvents();
-                                }
-                                catch
-                                {
-                                }
+                                IncrementProgressBar(540);
                                 for (var x = 0; x < 540; x++)
                                 {
                                     writer.Write(img.GetPixel(x, y).B);
@@ -927,13 +854,7 @@ namespace Moto_Logo
 
                             for (var y = 0; y < img.Height; y++)
                             {
-                                try
-                                {
-                                    ProgressBar.Value += img.Width;
-                                }
-                                catch
-                                {
-                                }
+                                IncrementProgressBar(img.Width);
                                 Application.DoEvents();
                                 var colors = new int[img.Width];
                                 for (var x = 0; x < img.Width; x++)
@@ -942,34 +863,22 @@ namespace Moto_Logo
                                     colors[x] |= img.GetPixel(x, y).G << 8;
                                     colors[x] |= img.GetPixel(x, y).B;
                                 }
-                                var j = 0;
-                                var compresstwo = compress_row_min_two(colors);
-                                var compressthree = compress_row_min_three(colors);
-                                if (compresstwo.Length <= compressthree.Length)
-                                {
-                                    writer.Write(compresstwo);
-                                    size += compresstwo.Length;
-                                }
-                                else
-                                {
-                                    writer.Write(compressthree);
-                                    size += compressthree.Length;
-                                }
+                                var compress = compress_row(colors);
+                                    writer.Write(compress);
+                                    size += compress.Length;
                             }
                         }
 
                         writer.BaseStream.Position = 0x0D + (i*0x20) + 0x1C;
                         writer.Write(size);
                         writer.BaseStream.Position = writer.BaseStream.Length;
-                        if (writer.BaseStream.Length > _maxFileSize)
-                        {
-                            ProgressBar.Visible = false;
-                            toolStripStatusLabel1.Text =
-                                @"Error: Images/options selected will not fit in logo.bin, Failed at " +
-                                tvLogo.Nodes[i].Text + @" Produced file is " +
-                                (writer.BaseStream.Length - _maxFileSize) + @" Bytes Too Large";
-                            return;
-                        }
+                        if (writer.BaseStream.Length <= _maxFileSize) continue;
+                        ProgressBar.Visible = false;
+                        toolStripStatusLabel1.Text =
+                            @"Error: Images/options selected will not fit in logo.bin, Failed at " +
+                            tvLogo.Nodes[i].Text + @" Produced file is " +
+                            (writer.BaseStream.Length - _maxFileSize) + @" Bytes Too Large";
+                        return;
                     }
                 }
             }
@@ -1183,7 +1092,7 @@ namespace Moto_Logo
 
         private void cboMoto_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int idx = cboMoto.SelectedIndex;
+            var idx = cboMoto.SelectedIndex;
             udResolutionX.Enabled = (idx == 0);
             udResolutionY.Enabled = (idx == 0);
             udResolutionX.Value = _deviceResolutionX[idx];
