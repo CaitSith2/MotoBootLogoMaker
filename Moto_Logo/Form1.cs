@@ -56,8 +56,12 @@ namespace Moto_Logo
 
         private Bitmap FixedSize(Image imgPhoto, int imgWidth, int imgHeight, bool forceCenter = false)
         {
-            var sourceWidth = imgPhoto.Width;
-            var sourceHeight = imgPhoto.Height;
+            var landscape = (Image)imgPhoto.Clone();
+            landscape.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            var img = (rdoLayoutLandscape.Checked ? landscape : imgPhoto);
+
+            var sourceWidth = img.Width;
+            var sourceHeight = img.Height;
             const int sourceX = 0;
             const int sourceY = 0;
             var destX = 0;
@@ -95,15 +99,17 @@ namespace Moto_Logo
 
             var bmPhoto = new Bitmap(imgWidth, imgHeight,
                               PixelFormat.Format24bppRgb);
-            bmPhoto.SetResolution(imgPhoto.HorizontalResolution,
-                             imgPhoto.VerticalResolution);
+            bmPhoto.SetResolution(img.HorizontalResolution,
+                             img.VerticalResolution);
 
             var grPhoto = Graphics.FromImage(bmPhoto);
-            grPhoto.Clear(((Bitmap) imgPhoto).GetPixel(0, 0));
+            grPhoto.Clear(((Bitmap) img).GetPixel(0, 0));
             grPhoto.InterpolationMode =
                     InterpolationMode.HighQualityBicubic;
 
-            grPhoto.DrawImage(imgPhoto,
+            
+
+            grPhoto.DrawImage(img,
                 new Rectangle(destX, destY, destWidth, destHeight),
                 new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight),
                 GraphicsUnit.Pixel);
