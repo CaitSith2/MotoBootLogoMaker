@@ -358,6 +358,7 @@ namespace Moto_Logo
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (tvLogo.SelectedNode == null) return;
             if((cboMoto.SelectedIndex == 0))
                 tvLogo.SelectedNode.Remove();
             else
@@ -420,6 +421,7 @@ namespace Moto_Logo
 
         private void tvLogo_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            if (tvLogo.SelectedNode == null) return;
             openFileDialog1.Filter = Resources.SelectImageFile;
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
             var img = new Bitmap(new MemoryStream(File.ReadAllBytes(openFileDialog1.FileName)));
@@ -757,13 +759,22 @@ namespace Moto_Logo
                 if (rdoAndroidRAW.Checked)
                 {
                     ProgressBar.Maximum = 540*540;
-                    Bitmap img;
                     try
                     {
                         _tvLogoAfterSelectProcessing = true;
                         SetRadioButtons(Convert.ToInt32(tvLogo.Nodes[0].Name));
-                        img = FixedSizeSave(_loadedbitmaps[Convert.ToInt32(tvLogo.Nodes[0].Name)]);
+                        var img = FixedSizeSave(_loadedbitmaps[Convert.ToInt32(tvLogo.Nodes[0].Name)]);
                         _tvLogoAfterSelectProcessing = false;
+                        for (var y = 0; y < 540; y++)
+                        {
+                            IncrementProgressBar(540);
+                            for (var x = 0; x < 540; x++)
+                            {
+                                writer.Write(img.GetPixel(x, y).B);
+                                writer.Write(img.GetPixel(x, y).G);
+                                writer.Write(img.GetPixel(x, y).R);
+                            }
+                        }
                     }
                     catch
                     {
@@ -785,25 +796,9 @@ namespace Moto_Logo
                                 writer.Close();
                                 return;
                             }
-                        _tvLogoAfterSelectProcessing = true;
-                        rdoImageCenter.Checked = true;
-                        rdoLayoutPortrait.Checked = true;
-                        img = FixedSizeSave(new Bitmap(100, 100));
-                        _tvLogoAfterSelectProcessing = false;
-                        var grPhoto = Graphics.FromImage(img);
-                        grPhoto.Clear(Color.White);
-                        grPhoto.Dispose();
+                        writer.Write(Resources._540x540);
                     }
-                    for (var y = 0; y < 540; y++)
-                    {
-                        IncrementProgressBar(540);
-                        for (var x = 0; x < 540; x++)
-                        {
-                            writer.Write(img.GetPixel(x, y).B);
-                            writer.Write(img.GetPixel(x, y).G);
-                            writer.Write(img.GetPixel(x, y).R);
-                        }
-                    }
+                    
 
                 }
                 else
@@ -827,6 +822,7 @@ namespace Moto_Logo
                         writer.Write((int) writer.BaseStream.Length);
                         writer.BaseStream.Position = writer.BaseStream.Length;
                         Bitmap img;
+                        var size = 0;
                         try
                         {
                             _tvLogoAfterSelectProcessing = true;
@@ -869,7 +865,7 @@ namespace Moto_Logo
                                 writer.Close();
                                 return;
                             }
-                            if ((errorCount + blankCount) == tvLogo.Nodes.Count)
+                            if (((errorCount + blankCount) == tvLogo.Nodes.Count) && (errorCount > 0))
                             {
                                 toolStripStatusLabel1.Text = @"Every single image selected failed to load"+
                                                              @" - Processing Aborted :(";
@@ -877,19 +873,18 @@ namespace Moto_Logo
                                 writer.Close();
                                 return;
                             }
-                            _tvLogoAfterSelectProcessing = true;
-                            rdoImageCenter.Checked = true;
-                            rdoLayoutPortrait.Checked = true;
-                            img = FixedSizeSave(new Bitmap(100, 100));
-                            var grPhoto = Graphics.FromImage(img);
-                            grPhoto.Clear(Color.White);
-                            grPhoto.Dispose();
-                            _tvLogoAfterSelectProcessing = false;
+                            writer.Write(android43
+                                ? Resources._540x540
+                                : Resources.motorun);
+                            size = android43 
+                                ? Resources._540x540.Length 
+                                : Resources.motorun.Length;
+                            goto BlankImage;
                         }
                         toolStripStatusLabel1.Text = @"Processing " + tvLogo.Nodes[i].Text;
                         ProgressBar.Value = 0;
                         ProgressBar.Maximum = img.Width*img.Height;
-                        var size = 0;
+                        
                         if (android43)
                         {
                             size = 0xD5930;
@@ -933,6 +928,7 @@ namespace Moto_Logo
                             }
                         }
 
+                    BlankImage:
                         writer.BaseStream.Position = 0x0D + (i*0x20) + 0x1C;
                         writer.Write(size);
                         writer.BaseStream.Position = writer.BaseStream.Length;
@@ -1045,6 +1041,8 @@ namespace Moto_Logo
         private void rdoAndroid43_CheckedChanged(object sender, EventArgs e)
         {
             if (_tvLogoAfterSelectProcessing) return;
+            if (tvLogo.SelectedNode == null) return;
+            if (string.IsNullOrEmpty(tvLogo.SelectedNode.Name)) return;
             var index = Convert.ToInt32(tvLogo.SelectedNode.Name);
             _loadedbitmapimageoptions[index] = rdoImageCenter.Checked
                 ? ImageOption.ImageOptionCenter
@@ -1054,7 +1052,7 @@ namespace Moto_Logo
             _loadedbitmapimagelayout[index] = rdoLayoutLandscape.Checked
                 ? ImageLayout.ImageLayoutLandscape
                 : ImageLayout.ImageLayoutPortrait;
-            
+
 
             tvLogo_AfterSelect(sender, null);
         }

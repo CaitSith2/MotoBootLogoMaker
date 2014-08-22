@@ -61,6 +61,16 @@ namespace Moto_Logo.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] _540x540 {
+            get {
+                object obj = ResourceManager.GetObject("_540x540", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Append.
         /// </summary>
         public static string Append {
@@ -85,6 +95,16 @@ namespace Moto_Logo.Properties {
         public static string LogoBins {
             get {
                 return ResourceManager.GetString("LogoBins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] motorun {
+            get {
+                object obj = ResourceManager.GetObject("motorun", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
