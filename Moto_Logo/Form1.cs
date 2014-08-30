@@ -250,12 +250,18 @@ namespace Moto_Logo
                             " much better than the unlocked device warning. :)";
                         break;
                     case "logo_lowpower":
-                        
+                        node.ToolTipText = "Visible when the phone has more than 3% power while fully powerd off. Not much more is known.\n" +
+                            "This feature is only present on the Moto E";
                         break;
                     case "logo_unplug":
-                        
+                        node.ToolTipText = "Visible when the phone is fully charged while plugged in and fully powered off.\n" +
+                            "This feature is only present on the Moto E";
                         break;
                     case "logo_charge":
+                        node.ToolTipText =
+                            "Visible when your phone is plugged in while fully powered off, and the phone has more" +
+                            " than 3% charge.  logo_battery is shown instead if it has 0-3% charge.\n" +
+                            "This feature is only available on Moto G that have received the Android 4.4.4 OTA update.";
                         break;
                 }
             }
@@ -994,7 +1000,7 @@ namespace Moto_Logo
             _loadedbitmapnames.Clear();
             _fileSaved = false;
             rdoAndroid44.Checked = true;
-            cboMoto.SelectedIndex = 4;
+            cboMoto.SelectedIndex = 3;
             tvLogo.Nodes.Clear();
             cboMoto_SelectedIndexChanged(sender,e);
             toolStripStatusLabel1.Text = "";
@@ -1006,10 +1012,9 @@ namespace Moto_Logo
         private void Form1_Load(object sender, EventArgs e)
         {
             Init_cboMoto("Custom",720,1280,4194304,0x3FFFFFFF);
-            Init_cboMoto("Moto G 4G/LTE", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_CHARGE));
             Init_cboMoto("Moto E", 540,960,4194304,(int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_LOWPOWER | LOGO.LOGO_UNPLUG));
-            Init_cboMoto("Moto X", 720,1280,4194304,(int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
-            Init_cboMoto("Moto G", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
+            Init_cboMoto("Moto X", 720,1280,4194304,(int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED ));
+            Init_cboMoto("Moto G", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_CHARGE));
             Init_cboMoto("Droid Ultra", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
             Init_cboMoto("Droid RAZR HD", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED | LOGO.KITKAT_DISABLED));
             Init_cboMoto("RAZR i", 540, 960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED | LOGO.KITKAT_DISABLED));
