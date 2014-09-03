@@ -90,6 +90,15 @@ namespace Moto_Logo.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error Opening file: &lt;FN&gt;.
+        /// </summary>
+        public static string FileOpenError {
+            get {
+                return ResourceManager.GetString("FileOpenError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Logo bin files|*.bin|All Files|*.*.
         /// </summary>
         public static string LogoBins {
@@ -152,6 +161,15 @@ namespace Moto_Logo.Properties {
         public static string ZipBins {
             get {
                 return ResourceManager.GetString("ZipBins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: Zip file &lt;ZFN&gt; Doesn&apos;t contain logo.bin.
+        /// </summary>
+        public static string Zipfile_logo_bin_error {
+            get {
+                return ResourceManager.GetString("Zipfile_logo_bin_error", resourceCulture);
             }
         }
     }

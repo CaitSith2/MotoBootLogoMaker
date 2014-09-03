@@ -291,6 +291,8 @@ namespace Moto_Logo
             }
             try
             {
+                
+
                 if (_loadedbitmaps.IndexOf(img) != -1) return;
                 _loadedbitmaps.Add(img);
                 tvLogo.Nodes[nodeindex].Name = _loadedbitmaps.IndexOf(img).ToString();
@@ -506,8 +508,7 @@ namespace Moto_Logo
                     zipFile = true;
                     if ((logobin = ExtractLogoBin(filename)) == null)
                     {
-                        toolStripStatusLabel1.Text = @"Error: Zip file " + filename +
-                                                     @" Doesn't contain logo.bin";
+                        toolStripStatusLabel1.Text = Resources.Zipfile_logo_bin_error.Replace("<ZFN>",filename);
                         Application.DoEvents();
                         return;
                     }
@@ -525,7 +526,7 @@ namespace Moto_Logo
                 catch (Exception)
                 {
                     ProgressBar.Visible = false;
-                    toolStripStatusLabel1.Text = @"Error Opening file: " + filename;
+                    toolStripStatusLabel1.Text = Resources.FileOpenError.Replace("<FN>", filename);
                     return;
                 }
 

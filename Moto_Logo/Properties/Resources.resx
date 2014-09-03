@@ -148,4 +148,10 @@
   <data name="_540x540" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\540x540.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Zipfile_logo_bin_error" xml:space="preserve">
+    <value>Error: Zip file &lt;ZFN&gt; Doesn't contain logo.bin</value>
+  </data>
+  <data name="FileOpenError" xml:space="preserve">
+    <value>Error Opening file: &lt;FN&gt;</value>
+  </data>
 </root>
