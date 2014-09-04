@@ -381,9 +381,9 @@ namespace Moto_Logo
             }
         }
 
-        private void SetRadioButtons(int index)
+        private void SetRadioButtons(ImageOption imageOption, ImageLayout imageLayout)
         {
-            switch (_loadedbitmapimageoptions[index])
+            switch (imageOption)
             {
                 case ImageOption.ImageOptionCenter:
                     rdoImageCenter.Checked = true;
@@ -395,7 +395,7 @@ namespace Moto_Logo
                     rdoImageStretchAspect.Checked = true;
                     break;
             }
-            switch (_loadedbitmapimagelayout[index])
+            switch (imageLayout)
             {
                 case ImageLayout.ImageLayoutPortrait:
                     rdoLayoutPortrait.Checked = true;
@@ -406,9 +406,15 @@ namespace Moto_Logo
             }
         }
 
+        private void SetRadioButtons(int index)
+        {
+            SetRadioButtons(_loadedbitmapimageoptions[index], _loadedbitmapimagelayout[index]);
+        }
+
         bool _tvLogoAfterSelectProcessing;
         private void tvLogo_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (tvLogo.SelectedNode == null) return;
             if (_tvLogoAfterSelectProcessing) return;
             _tvLogoAfterSelectProcessing = true;
             try
@@ -424,10 +430,26 @@ namespace Moto_Logo
             }
             catch
             {
-                pictureBox1.Image = new Bitmap(1, 1);
+                SetRadioButtons(ImageOption.ImageOptionCenter,ImageLayout.ImageLayoutPortrait);
+                switch (tvLogo.SelectedNode.Text)
+                {
+                    default:
+                        pictureBox1.Image = new Bitmap(1, 1);
+                        break;
+                    case "logo_lowpower":
+                        pictureBox1.Image = FixedSizePreview(Resources.logo_lowpower);
+                        break;
+                    case "logo_battery":
+                        pictureBox1.Image = FixedSizePreview(Resources.logo_battery);
+                        break;
+                    case "logo_unplug":
+                        pictureBox1.Image = FixedSizePreview(Resources.logo_unplug);
+                        break;
+                }
                 toolStripStatusLabel1.Text = "";
                 Application.DoEvents();
             }
+            toolStripStatusLabel1.Text = "";
             _tvLogoAfterSelectProcessing = false;
         }
 
@@ -918,9 +940,28 @@ namespace Moto_Logo
                                 writer.Close();
                                 return;
                             }
-                            result = android43
-                                ? Resources._540x540
-                                : Resources.motorun;
+                            _tvLogoAfterSelectProcessing = true;
+                            SetRadioButtons(ImageOption.ImageOptionCenter, ImageLayout.ImageLayoutPortrait);
+                            _tvLogoAfterSelectProcessing = false;
+                            
+                            switch (tvLogo.Nodes[i].Text)
+                            {
+                                case "logo_lowpower":
+                                    result = encode_image(FixedSizeSave(Resources.logo_lowpower));
+                                    break;
+                                case "logo_battery":
+                                    result = encode_image(FixedSizeSave(Resources.logo_battery));
+                                    break;
+                                case "logo_unplug":
+                                    result = encode_image(FixedSizeSave(Resources.logo_unplug));
+                                    break;
+                                default:
+                                    result = android43
+                                        ? Resources._540x540
+                                        : Resources.motorun;
+                                    break;
+                            }
+                            
                         }
                         writer.Write(result);
 
@@ -1057,6 +1098,7 @@ namespace Moto_Logo
         private void button3_Click(object sender, EventArgs e)
         {
             Bitmap img;
+            if (tvLogo.SelectedNode == null) return;
             try
             {
                 img = File.Exists(tvLogo.SelectedNode.Name)
@@ -1065,8 +1107,20 @@ namespace Moto_Logo
             }
             catch (Exception)
             {
-
-                return;
+                switch (tvLogo.SelectedNode.Text)
+                {
+                    default:
+                        return;
+                    case "logo_lowpower":
+                        img = Resources.logo_lowpower;
+                        break;
+                    case "logo_battery":
+                        img = Resources.logo_battery;
+                        break;
+                    case "logo_unplug":
+                        img = Resources.logo_unplug;
+                        break;
+                }
             }
             saveFileDialog2.Filter = @"Png file|*.png|Jpeg file|*.jpg|Bitmap File|*.bmp|Gif file|*.gif|All Files|*.*";
             if (saveFileDialog2.ShowDialog() != DialogResult.OK) return;

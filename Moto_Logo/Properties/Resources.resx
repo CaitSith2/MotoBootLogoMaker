@@ -154,4 +154,13 @@
   <data name="FileOpenError" xml:space="preserve">
     <value>Error Opening file: &lt;FN&gt;</value>
   </data>
+  <data name="logo_battery" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\logo_battery.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="logo_lowpower" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\logo_lowpower.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="logo_unplug" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\logo_unplug.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
