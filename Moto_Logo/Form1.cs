@@ -37,7 +37,7 @@ namespace Moto_Logo
         private readonly List<String> _loadedbitmapnames = new List<string>(); 
         private readonly List<Bitmap> _loadedbitmaps = new List<Bitmap>();
         private readonly List<ImageOption> _loadedbitmapimageoptions = new List<ImageOption>();
-        private readonly List<ImageLayout> _loadedbitmapimagelayout = new List<ImageLayout>(); 
+        private readonly List<ImageLayout> _loadedbitmapimagelayout = new List<ImageLayout>();
 
         private readonly List<int> _deviceResolutionX = new List<int>();
         private readonly List<int> _deviceResolutionY = new List<int>();
@@ -260,8 +260,7 @@ namespace Moto_Logo
                     case "logo_charge":
                         node.ToolTipText =
                             "Visible when your phone is plugged in while fully powered off, and the phone has more" +
-                            " than 3% charge.  logo_battery is shown instead if it has 0-3% charge.\n" +
-                            "This feature is only available on Moto G that have received the Android 4.4.4 OTA update.";
+                            " than 3% charge.  logo_battery is shown instead if it has 0-3% charge.\n";
                         break;
                 }
             }
@@ -449,7 +448,6 @@ namespace Moto_Logo
                 toolStripStatusLabel1.Text = "";
                 Application.DoEvents();
             }
-            toolStripStatusLabel1.Text = "";
             _tvLogoAfterSelectProcessing = false;
         }
 
@@ -617,6 +615,11 @@ namespace Moto_Logo
                             x |= reader.ReadByte();
                             var y = (UInt16) (reader.ReadByte() << 8);
                             y |= reader.ReadByte();
+
+                            if (x > udResolutionX.Value)
+                                udResolutionX.Value = x;
+                            if (y > udResolutionY.Value)
+                                udResolutionY.Value = y;
                             img = new Bitmap(x, y, PixelFormat.Format24bppRgb);
                             var xx = 0;
                             var yy = 0;
@@ -886,6 +889,14 @@ namespace Moto_Logo
                     for (var i = 0; i < tvLogo.Nodes.Count; i++)
                     {
                         toolStripStatusLabel1.Text = @"Processing " + tvLogo.Nodes[i].Text;
+
+
+                        var sectorfillstr = Encoding.ASCII.GetBytes("*---==|This Boot logo was created with \"" + 
+                                    Application.ProductName + " " +
+                                    Application.ProductVersion +  "\" written by CaitSith2|==---*");
+                        var sectorfilloffset = 0;
+                        while (((writer.BaseStream.Position%0x200) != 0) && (sectorfilloffset < sectorfillstr.Length))
+                            writer.Write(sectorfillstr[sectorfilloffset++]);
                         while ((writer.BaseStream.Position%0x200) != 0)
                             writer.Write((byte) 0xFF);
                         writer.BaseStream.Position = 0x0D + 0x18 + (i*0x20);
@@ -1042,7 +1053,7 @@ namespace Moto_Logo
             _loadedbitmapnames.Clear();
             _fileSaved = false;
             rdoAndroid44.Checked = true;
-            cboMoto.SelectedIndex = 3;
+            cboMoto.SelectedIndex = Settings.Default.MotoDevice;
             tvLogo.Nodes.Clear();
             cboMoto_SelectedIndexChanged(sender,e);
             toolStripStatusLabel1.Text = "";
@@ -1054,9 +1065,11 @@ namespace Moto_Logo
         private void Form1_Load(object sender, EventArgs e)
         {
             Init_cboMoto("Custom",720,1280,4194304,0x3FFFFFFF);
+            Init_cboMoto("Moto X (2nd Gen)", 1080, 1920, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_LOWPOWER | LOGO.LOGO_CHARGE));
+            Init_cboMoto("Moto G (2nd Gen)", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
             Init_cboMoto("Moto E", 540,960,4194304,(int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_LOWPOWER | LOGO.LOGO_UNPLUG));
-            Init_cboMoto("Moto X", 720,1280,4194304,(int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED ));
-            Init_cboMoto("Moto G", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_CHARGE));
+            Init_cboMoto("Moto X (1st Gen)", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED ));
+            Init_cboMoto("Moto G (1st Gen)", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED | LOGO.LOGO_CHARGE));
             Init_cboMoto("Droid Ultra", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_BATTERY | LOGO.LOGO_UNLOCKED));
             Init_cboMoto("Droid RAZR HD", 720, 1280, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED | LOGO.KITKAT_DISABLED));
             Init_cboMoto("RAZR i", 540, 960, 4194304, (int)(LOGO.LOGO_BOOT | LOGO.LOGO_UNLOCKED | LOGO.KITKAT_DISABLED));
@@ -1213,6 +1226,8 @@ namespace Moto_Logo
         private void cboMoto_SelectedIndexChanged(object sender, EventArgs e)
         {
             var idx = cboMoto.SelectedIndex;
+            Settings.Default.MotoDevice = idx;
+            Settings.Default.Save();
             udResolutionX.Enabled = (idx == 0);
             udResolutionY.Enabled = (idx == 0);
             udResolutionX.Value = _deviceResolutionX[idx];

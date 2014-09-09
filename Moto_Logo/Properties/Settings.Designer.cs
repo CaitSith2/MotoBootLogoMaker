@@ -22,5 +22,17 @@ namespace Moto_Logo.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int MotoDevice {
+            get {
+                return ((int)(this["MotoDevice"]));
+            }
+            set {
+                this["MotoDevice"] = value;
+            }
+        }
     }
 }
