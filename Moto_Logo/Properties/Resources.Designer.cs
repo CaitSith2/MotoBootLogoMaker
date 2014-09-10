@@ -111,6 +111,26 @@ namespace Moto_Logo.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap logo_boot {
+            get {
+                object obj = ResourceManager.GetObject("logo_boot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap logo_charge {
+            get {
+                object obj = ResourceManager.GetObject("logo_charge", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap logo_lowpower {
             get {
                 object obj = ResourceManager.GetObject("logo_lowpower", resourceCulture);

@@ -1,4 +1,5 @@
-﻿// ReSharper disable EmptyGeneralCatchClause
+﻿using System.Security.Cryptography;
+// ReSharper disable EmptyGeneralCatchClause
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
@@ -444,6 +445,13 @@ namespace Moto_Logo
                     case "logo_unplug":
                         pictureBox1.Image = FixedSizePreview(Resources.logo_unplug);
                         break;
+                    case "logo_charge":
+                        pictureBox1.Image = FixedSizePreview(Resources.logo_charge);
+                        break;
+                    case "logo_boot":
+                    case "logo_unlocked":
+                        pictureBox1.Image = FixedSizePreview(Resources.logo_boot);
+                        break;
                 }
                 toolStripStatusLabel1.Text = "";
                 Application.DoEvents();
@@ -703,9 +711,12 @@ namespace Moto_Logo
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var temp = Settings.Default.MotoDevice;
             openFileDialog1.Filter = @"Logo Files|*.zip;*.bin|Bin Files|*.bin|Flashable Zip files|*.zip|All Files|*.*";
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
             OpenFile(openFileDialog1.FileName);
+            Settings.Default.MotoDevice = temp;
+            Settings.Default.Save();
         }
 
 
@@ -875,6 +886,15 @@ namespace Moto_Logo
                 }
                 else
                 {
+                    var logoBootEmpty = false;
+                    var logoBootIndex = -1;
+                    var logoUnlockedEmpty = false;
+                    var logoUnlockedIndex = -1;
+
+                    var hashes = new List<byte[]>();
+                    var offsets = new List<int>();
+                    var sizes = new List<int>();
+
                     writer.Write(0x6F676F4C6F746F4DL);
                     writer.Write((byte) 0);
                     writer.Write(0x0D + (tvLogo.Nodes.Count*0x20));
@@ -885,7 +905,20 @@ namespace Moto_Logo
                         var name = Encoding.ASCII.GetBytes(tvLogo.Nodes[i].Text);
                         writer.Write(name);
                         writer.Write(new byte[0x20 - name.Length]);
+                        switch (tvLogo.Nodes[i].Text)
+                        {
+                            case "logo_boot":
+                                logoBootIndex = i;
+                                logoBootEmpty = tvLogo.Nodes[i].Name == "";
+                                break;
+                            case "logo_unlocked":
+                                logoUnlockedIndex = i;
+                                logoUnlockedEmpty = tvLogo.Nodes[i].Name == "";
+                                break;
+                        }
                     }
+                    var bothLogoEmpty = ((logoBootIndex == -1) || logoBootEmpty) &&
+                                         ((logoUnlockedIndex == -1) || logoUnlockedEmpty);
                     for (var i = 0; i < tvLogo.Nodes.Count; i++)
                     {
                         toolStripStatusLabel1.Text = @"Processing " + tvLogo.Nodes[i].Text;
@@ -899,9 +932,6 @@ namespace Moto_Logo
                             writer.Write(sectorfillstr[sectorfilloffset++]);
                         while ((writer.BaseStream.Position%0x200) != 0)
                             writer.Write((byte) 0xFF);
-                        writer.BaseStream.Position = 0x0D + 0x18 + (i*0x20);
-                        writer.Write((int) writer.BaseStream.Length);
-                        writer.BaseStream.Position = writer.BaseStream.Length;
                         byte[] result;
                         try
                         {
@@ -928,7 +958,7 @@ namespace Moto_Logo
                         }
                         catch
                         {
-                            if (tvLogo.Nodes[0].Name != "")
+                            if (tvLogo.Nodes[i].Name != "")
                                 errorCount++;
                             else
                                 blankCount++;
@@ -966,6 +996,15 @@ namespace Moto_Logo
                                 case "logo_unplug":
                                     result = encode_image(FixedSizeSave(Resources.logo_unplug));
                                     break;
+                                case "logo_charge":
+                                    result = encode_image(FixedSizeSave(Resources.logo_charge));
+                                    break;
+                                case "logo_unlocked":
+                                case "logo_boot":
+                                    if (!bothLogoEmpty)
+                                        continue;
+                                    result = encode_image(FixedSizeSave(Resources.logo_boot));
+                                    break;
                                 default:
                                     result = android43
                                         ? Resources._540x540
@@ -974,10 +1013,47 @@ namespace Moto_Logo
                             }
                             
                         }
-                        writer.Write(result);
 
-                        writer.BaseStream.Position = 0x0D + (i*0x20) + 0x1C;
-                        writer.Write(result.Length);
+                        var tempoffset = (int)writer.BaseStream.Position;
+                        var tempsize = result.Length;
+                        var hash = SHA256.Create().ComputeHash(result);
+                        var hashmatch = false;
+                        for (var j = 0; j < hashes.Count; j++)
+                        {
+                            if (!hashes[j].SequenceEqual(hash)) continue;
+                            hashmatch = true;
+                            tempoffset = offsets[j];
+                            tempsize = sizes[j];
+                            break;
+                        }
+
+                        if ((logoBootIndex == i) && (logoUnlockedIndex > -1) && logoUnlockedEmpty)
+                        {
+                            writer.BaseStream.Position = 0x0D + (logoUnlockedIndex * 0x20) + 0x18;
+                            writer.Write(tempoffset);
+                            writer.Write(tempsize);
+                            writer.BaseStream.Position = tempoffset;
+                        }
+                        if ((logoUnlockedIndex == i) && (logoBootIndex > -1) && logoBootEmpty)
+                        {
+                            writer.BaseStream.Position = 0x0D + (logoBootIndex * 0x20) + 0x18;
+                            writer.Write(tempoffset);
+                            writer.Write(tempsize);
+                            writer.BaseStream.Position = tempoffset;
+                        }
+
+
+                        if (!hashmatch)
+                        {
+                            hashes.Add(hash);
+                            offsets.Add(tempoffset);
+                            sizes.Add(result.Length);
+                            writer.Write(result);
+                        }
+
+                        writer.BaseStream.Position = 0x0D + 0x18 + (i * 0x20);
+                        writer.Write(tempoffset);
+                        writer.Write(tempsize);
                         writer.BaseStream.Position = writer.BaseStream.Length;
                         if (writer.BaseStream.Length <= _maxFileSize) continue;
                         toolStripStatusLabel1.Text =
@@ -1132,6 +1208,9 @@ namespace Moto_Logo
                         break;
                     case "logo_unplug":
                         img = Resources.logo_unplug;
+                        break;
+                    case "logo_charge":
+                        img = Resources.logo_charge;
                         break;
                 }
             }
