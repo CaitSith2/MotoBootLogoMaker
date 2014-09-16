@@ -416,6 +416,7 @@ namespace Moto_Logo
         {
             if (tvLogo.SelectedNode == null) return;
             if (_tvLogoAfterSelectProcessing) return;
+            txtLogoInternalFile.Text = tvLogo.SelectedNode.Text;
             _tvLogoAfterSelectProcessing = true;
             try
             {
@@ -604,6 +605,44 @@ namespace Moto_Logo
                         offset[i] = reader.ReadInt32();
                         size[i] = reader.ReadInt32();
                     }
+                    var comment = "";
+                    var temp = reader.ReadInt32();
+                    switch (temp)
+                    {
+                        case -2:    //Version 2.2 and later
+                        {
+                            temp = reader.ReadInt32();
+                            var device = Encoding.UTF8.GetString(reader.ReadBytes(temp));
+                            for (var i = 0; i < cboMoto.Items.Count; i++)
+                            {
+                                if ((string) cboMoto.Items[i] != device) continue;
+                                cboMoto.SelectedIndex = i;
+                                break;
+                            }
+
+                            temp = reader.ReadInt32();
+                            txtComments.Text = Encoding.ASCII.GetString(reader.ReadBytes(temp));
+                            temp = reader.ReadInt32();
+                            comment = Encoding.UTF8.GetString(reader.ReadBytes(temp));
+                            if (cboMoto.SelectedIndex == 0)
+                            {
+                                var resx = reader.ReadUInt16();
+                                var resy = reader.ReadUInt16();
+
+                                if(resx != 0xFFFF)
+                                    udResolutionX.Value = resx;
+                                if(resy != 0xFFFF)
+                                    udResolutionY.Value = resy;
+                            }
+                            Application.DoEvents();
+                        }
+                            break;
+                        case 0x2D2D2D2A:    //Version 2.0 - 2.1
+                            txtComments.Text = @"*---" + Encoding.ASCII.GetString(reader.ReadBytes(0x67));
+                            break;
+                    }
+
+
                     reader.BaseStream.Position = offset[0];
                     if (reader.ReadInt64() != 0x006E75526F746F4DL)
                     {
@@ -696,6 +735,7 @@ namespace Moto_Logo
 
 
                     }
+                    txtComments.Text = comment;
                     _tvLogoAfterSelectProcessing = false;
                 }
             }
@@ -917,19 +957,27 @@ namespace Moto_Logo
                                 break;
                         }
                     }
+                    var sectorfillstr = Encoding.ASCII.GetBytes("*---==|This Boot logo was created with \"" +
+                                    Application.ProductName + " " +
+                                    Application.ProductVersion + "\" written by CaitSith2|==---*");
+                    writer.Write(-2);
+                    var cboMotoItem = (string)cboMoto.SelectedItem;
+                    writer.Write(Encoding.UTF8.GetBytes(cboMotoItem).Length);
+                    writer.Write(Encoding.UTF8.GetBytes(cboMotoItem));
+                    writer.Write(sectorfillstr.Length);
+                    writer.Write(sectorfillstr);
+                    writer.Write(Encoding.UTF8.GetBytes(txtComments.Text).Length);
+                    writer.Write(Encoding.UTF8.GetBytes(txtComments.Text));
+                    writer.Write((UInt16)udResolutionX.Value);
+                    writer.Write((UInt16)udResolutionY.Value);
+                    
+
                     var bothLogoEmpty = ((logoBootIndex == -1) || logoBootEmpty) &&
                                          ((logoUnlockedIndex == -1) || logoUnlockedEmpty);
                     for (var i = 0; i < tvLogo.Nodes.Count; i++)
                     {
                         toolStripStatusLabel1.Text = @"Processing " + tvLogo.Nodes[i].Text;
 
-
-                        var sectorfillstr = Encoding.ASCII.GetBytes("*---==|This Boot logo was created with \"" + 
-                                    Application.ProductName + " " +
-                                    Application.ProductVersion +  "\" written by CaitSith2|==---*");
-                        var sectorfilloffset = 0;
-                        while (((writer.BaseStream.Position%0x200) != 0) && (sectorfilloffset < sectorfillstr.Length))
-                            writer.Write(sectorfillstr[sectorfilloffset++]);
                         while ((writer.BaseStream.Position%0x200) != 0)
                             writer.Write((byte) 0xFF);
                         byte[] result;
@@ -1131,6 +1179,7 @@ namespace Moto_Logo
             rdoAndroid44.Checked = true;
             cboMoto.SelectedIndex = Settings.Default.MotoDevice;
             tvLogo.Nodes.Clear();
+            txtComments.Text = "";
             cboMoto_SelectedIndexChanged(sender,e);
             toolStripStatusLabel1.Text = "";
             Application.DoEvents();

@@ -81,6 +81,11 @@
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.spltStatus = new System.Windows.Forms.SplitContainer();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtComments = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spltMain)).BeginInit();
             this.spltMain.Panel1.SuspendLayout();
@@ -120,6 +125,14 @@
             this.spltStatus.Panel1.SuspendLayout();
             this.spltStatus.Panel2.SuspendLayout();
             this.spltStatus.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+            this.splitContainer3.Panel1.SuspendLayout();
+            this.splitContainer3.Panel2.SuspendLayout();
+            this.splitContainer3.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -551,9 +564,9 @@
             // 
             // spltImage.Panel1
             // 
+            this.spltImage.Panel1.Controls.Add(this.splitContainer2);
             this.spltImage.Panel1.Controls.Add(this.txtLogoInternalFile);
             this.spltImage.Panel1.Controls.Add(this.flowLayoutPanel2);
-            this.spltImage.Panel1.Controls.Add(this.tvLogo);
             // 
             // spltImage.Panel2
             // 
@@ -620,7 +633,7 @@
             this.tvLogo.Location = new System.Drawing.Point(0, 0);
             this.tvLogo.Name = "tvLogo";
             this.tvLogo.ShowNodeToolTips = true;
-            this.tvLogo.Size = new System.Drawing.Size(188, 352);
+            this.tvLogo.Size = new System.Drawing.Size(188, 170);
             this.tvLogo.TabIndex = 0;
             this.tvLogo.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvLogo_AfterSelect);
             this.tvLogo.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tvLogo_MouseDoubleClick);
@@ -685,6 +698,78 @@
             this.spltStatus.SplitterDistance = 459;
             this.spltStatus.TabIndex = 3;
             // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.txtComments);
+            this.splitContainer2.Panel1.Controls.Add(this.label3);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
+            this.splitContainer2.Size = new System.Drawing.Size(188, 296);
+            this.splitContainer2.SplitterDistance = 109;
+            this.splitContainer2.TabIndex = 6;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label3.Location = new System.Drawing.Point(0, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(59, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Comments:";
+            // 
+            // txtComments
+            // 
+            this.txtComments.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtComments.Location = new System.Drawing.Point(0, 13);
+            this.txtComments.MaxLength = 512;
+            this.txtComments.Multiline = true;
+            this.txtComments.Name = "txtComments";
+            this.txtComments.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtComments.Size = new System.Drawing.Size(188, 96);
+            this.txtComments.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label4.Location = new System.Drawing.Point(0, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(39, 13);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Logos:";
+            // 
+            // splitContainer3
+            // 
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer3.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer3.IsSplitterFixed = true;
+            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer3.Name = "splitContainer3";
+            this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer3.Panel1
+            // 
+            this.splitContainer3.Panel1.Controls.Add(this.label4);
+            this.splitContainer3.Panel1MinSize = 1;
+            // 
+            // splitContainer3.Panel2
+            // 
+            this.splitContainer3.Panel2.Controls.Add(this.tvLogo);
+            this.splitContainer3.Size = new System.Drawing.Size(188, 183);
+            this.splitContainer3.SplitterDistance = 12;
+            this.splitContainer3.SplitterWidth = 1;
+            this.splitContainer3.TabIndex = 2;
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -747,6 +832,16 @@
             this.spltStatus.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spltStatus)).EndInit();
             this.spltStatus.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel1.PerformLayout();
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
+            this.splitContainer3.Panel1.ResumeLayout(false);
+            this.splitContainer3.Panel1.PerformLayout();
+            this.splitContainer3.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+            this.splitContainer3.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -806,6 +901,11 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel5;
         private System.Windows.Forms.RadioButton rdoLayoutPortrait;
         private System.Windows.Forms.RadioButton rdoLayoutLandscape;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.TextBox txtComments;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.SplitContainer splitContainer3;
     }
 }
 
