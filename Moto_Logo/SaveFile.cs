@@ -13,6 +13,24 @@ namespace Moto_Logo
 {
     public partial class Form1
     {
+
+        private void SaveFileDialog(bool showDialog)
+        {
+            toolStripStatusLabel1.Text = "";
+            Application.DoEvents();
+            saveFileDialog1.Filter = Resources.ZipBins;
+            if (showDialog && (saveFileDialog1.ShowDialog() != DialogResult.OK)) return;
+            try
+            {
+                SaveFile();
+            }
+            catch (Exception ex)
+            {
+                ProgressBar.Visible = false;
+                toolStripStatusLabel1.Text = @"Exception during processing: " + ex.GetBaseException();
+            }
+        }
+
         private byte[] encode_image(Bitmap img)
         {
             var stream = new MemoryStream();

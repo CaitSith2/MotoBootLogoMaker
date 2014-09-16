@@ -487,36 +487,12 @@ namespace Moto_Logo
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabel1.Text = "";
-            Application.DoEvents();
-            saveFileDialog1.Filter = Resources.ZipBins;
-            if ((!_fileSaved) && (saveFileDialog1.ShowDialog() != DialogResult.OK)) return;
-            try
-            {
-                SaveFile();
-            }
-            catch (Exception ex)
-            {
-                ProgressBar.Visible = false;
-                toolStripStatusLabel1.Text = @"Exception during processing: " + ex.GetBaseException();
-            }
+            SaveFileDialog(!_fileSaved);
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            toolStripStatusLabel1.Text = "";
-            Application.DoEvents();
-            saveFileDialog1.Filter = Resources.ZipBins;
-            if (saveFileDialog1.ShowDialog() != DialogResult.OK) return;
-            try
-            {
-                SaveFile();
-            }
-            catch (Exception ex)
-            {
-                ProgressBar.Visible = false;
-                toolStripStatusLabel1.Text = @"Exception during processing: " + ex.GetBaseException();
-            }
+            SaveFileDialog(true);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
