@@ -20,12 +20,16 @@ namespace Moto_Logo
         };
         // ReSharper restore InconsistentNaming
 
+        private void init_tree(LOGO logo)
+        {
+            init_tree((UInt32)logo);
+        }
 
         private void init_tree(UInt32 logobincontents)
         {
             if (logobincontents == (int)LOGO.LOGO_RAW)
             {
-                init_tree(false, false, true, false, false, false);
+                init_tree(LOGO.LOGO_UNLOCKED);
                 rdoAndroid43.Enabled = false;
                 rdoAndroid44.Enabled = false;
                 rdoAndroidRAW.Checked = true;
@@ -50,7 +54,8 @@ namespace Moto_Logo
             return keep;
         }
 
-        private void init_tree(bool logoboot, bool logobattery, bool logounlocked, bool logolowpower, bool logounplug, bool logocharge)
+        private void init_tree(bool logoboot, bool logobattery, 
+            bool logounlocked, bool logolowpower, bool logounplug, bool logocharge)
         {
             var logoBoot = false;
             var logoBattery = false;

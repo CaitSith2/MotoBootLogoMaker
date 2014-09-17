@@ -194,22 +194,22 @@ namespace Moto_Logo
                 switch (txtLogoInternalFile.Text)
                 {
                     case "logo_boot":
-                        init_tree(true, false, false, false, false,false);
+                        init_tree(LOGO.LOGO_BOOT);
                         break;
                     case "logo_battery":
-                        init_tree(false, true, false, false, false, false);
+                        init_tree(LOGO.LOGO_BATTERY);
                         break;
                     case "logo_unlocked":
-                        init_tree(false, false, true, false, false, false);
+                        init_tree(LOGO.LOGO_UNLOCKED);
                         break;
                     case "logo_lowpower":
-                        init_tree(false, false, false, true, false, false);
+                        init_tree(LOGO.LOGO_LOWPOWER);
                         break;
                     case "logo_unplug":
-                        init_tree(false, false, false, false, true, false);
+                        init_tree(LOGO.LOGO_UNPLUG);
                         break;
                     case "logo_charge":
-                        init_tree(false, false, false, false, false, true);
+                        init_tree(LOGO.LOGO_CHARGE);
                         break;
                 }
 
